@@ -11,17 +11,8 @@ func (sm *Server) handle(ctx context.Context, conn net.Conn) error {
 	defer conn.Close()
 
 	for {
-		ns := netstring.ForReading()
-
-		for {
-			err := ns.ReadFrom(conn)
-			if err == nil {
-				break
-			}
-			if err == netstring.Incomplete {
-				continue
-			}
-
+		ns, err := netstringRead(conn)
+		if err != nil {
 			return err
 		}
 
@@ -35,7 +26,6 @@ func (sm *Server) handle(ctx context.Context, conn net.Conn) error {
 		sm.mapsLock.RUnlock()
 
 		var res *Result
-		var err error
 
 		if exists {
 			res, err = fn(ctx, r.Key)
@@ -62,4 +52,22 @@ func (sm *Server) handle(ctx context.Context, conn net.Conn) error {
 			return err
 		}
 	}
+}
+
+func netstringRead(conn net.Conn) (*netstring.Netstring, error) {
+	ns := netstring.ForReading()
+
+	for {
+		err := ns.ReadFrom(conn)
+		if err == nil {
+			break
+		}
+		if err == netstring.Incomplete {
+			continue
+		}
+
+		return nil, err
+	}
+
+	return ns, nil
 }
