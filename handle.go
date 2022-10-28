@@ -10,56 +10,56 @@ import (
 func (sm *Server) handle(ctx context.Context, conn net.Conn) error {
 	defer conn.Close()
 
-	ns := netstring.ForReading()
-
 	for {
-		err := ns.ReadFrom(conn)
-		if err == nil {
-			break
+		ns := netstring.ForReading()
+
+		for {
+			err := ns.ReadFrom(conn)
+			if err == nil {
+				break
+			}
+			if err == netstring.Incomplete {
+				continue
+			}
+
+			return err
 		}
-		if err == netstring.Incomplete {
-			continue
+
+		r := &Request{}
+		if err := r.Decode(ns); err != nil {
+			return err
 		}
 
-		return err
-	}
+		sm.mapsLock.RLock()
+		fn, exists := sm.maps[r.Name]
+		sm.mapsLock.RUnlock()
 
-	r := &Request{}
-	if err := r.Decode(ns); err != nil {
-		return err
-	}
+		var res *Result
+		var err error
 
-	sm.mapsLock.RLock()
-	fn, exists := sm.maps[r.Name]
-	sm.mapsLock.RUnlock()
+		if exists {
+			res, err = fn(ctx, r.Key)
+			if err != nil {
+				res = ReplyTempFail(err.Error())
+			}
 
-	var res *Result
-	var err error
+		} else if sm.defaultMap != nil {
+			res, err = sm.defaultMap(ctx, r.Name, r.Key)
+			if err != nil {
+				res = ReplyTempFail(err.Error())
+			}
 
-	if exists {
-		res, err = fn(ctx, r.Key)
+		} else {
+			res = ReplyTempFail("the lookup map does not exist")
+		}
+
+		b, err := res.Encode().Marshal()
 		if err != nil {
-			res = ReplyTempFail(err.Error())
+			return err
 		}
 
-	} else if sm.defaultMap != nil {
-		res, err = sm.defaultMap(ctx, r.Name, r.Key)
-		if err != nil {
-			res = ReplyTempFail(err.Error())
+		if _, err := conn.Write(b); err != nil {
+			return err
 		}
-
-	} else {
-		res = ReplyTempFail("the lookup map does not exist")
 	}
-
-	b, err := res.Encode().Marshal()
-	if err != nil {
-		return err
-	}
-
-	if _, err := conn.Write(b); err != nil {
-		return err
-	}
-
-	return nil
 }
