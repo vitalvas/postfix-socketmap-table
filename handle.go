@@ -30,7 +30,10 @@ func (sm *Server) handle(ctx context.Context, conn net.Conn) error {
 			return err
 		}
 
+		sm.mapsLock.RLock()
 		fn, exists := sm.maps[r.Name]
+		sm.mapsLock.RUnlock()
+
 		var res *Result
 		var err error
 

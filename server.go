@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"sync"
 )
 
 const defaultPort int = 27823
 
 type Server struct {
 	maps       map[string]LookupFn
+	mapsLock   sync.RWMutex
 	defaultMap DefaultLookupFn
 }
 
