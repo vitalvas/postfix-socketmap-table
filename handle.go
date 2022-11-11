@@ -3,6 +3,7 @@ package socketmap
 import (
 	"context"
 	"net"
+	"time"
 
 	"github.com/seandlg/netstring"
 )
@@ -63,6 +64,7 @@ func netstringRead(conn net.Conn) (*netstring.Netstring, error) {
 			break
 		}
 		if err == netstring.Incomplete {
+			time.Sleep(time.Millisecond)
 			continue
 		}
 
