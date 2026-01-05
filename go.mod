@@ -1,9 +1,14 @@
 module github.com/vitalvas/postfix-socketmap-table
 
-go 1.19
+go 1.25
 
 require (
-	github.com/seandlg/netstring v1.0.0
-	golang.org/x/exp v0.0.0-20221019170559-20944726eadf
+	github.com/stretchr/testify v1.11.1
 	golang.org/x/net v0.10.0
+)
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -1,7 +1,5 @@
 package socketmap
 
-import "github.com/seandlg/netstring"
-
 type ReplyType string
 
 const (
@@ -18,8 +16,8 @@ type Result struct {
 	Data   string
 }
 
-func (r *Result) Encode() *netstring.Netstring {
-	return netstring.From([]byte(string(r.Status) + " " + r.Data))
+func (r *Result) Encode() *Netstring {
+	return NetstringFrom([]byte(string(r.Status) + " " + r.Data))
 }
 
 func ReplyOK(data string) *Result {

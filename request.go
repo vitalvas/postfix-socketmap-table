@@ -3,8 +3,6 @@ package socketmap
 import (
 	"errors"
 	"strings"
-
-	"github.com/seandlg/netstring"
 )
 
 var errorMalformedRequest = errors.New("malformed request")
@@ -15,7 +13,7 @@ type Request struct {
 	Key  string
 }
 
-func (r *Request) Decode(ns *netstring.Netstring) error {
+func (r *Request) Decode(ns *Netstring) error {
 	// Get the original content of the message
 	b, err := ns.Bytes()
 	if err != nil {

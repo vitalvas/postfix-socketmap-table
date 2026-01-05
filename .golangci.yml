@@ -1,31 +1,42 @@
+version: "2"
 linters:
+  default: none
   enable:
-    - megacheck
-    - revive
-    - govet
-    - unconvert
-    - megacheck
-    - gas
-    - gocyclo
-    - dupl
-    - misspell
-    - typecheck
-    - stylecheck
-    - exportloopref
-    - gocritic
-    - nakedret
-    - gosimple
-    - prealloc
-    - staticcheck
-    - unused
+    - copyloopvar
     - dogsled
-  fast: false
-  disable-all: true
-
-linters-settings:
-  gocritic:
-    disabled-checks:
-      - ifElseChain
-  gosec:
-    excludes:
-      - G402
+    - dupl
+    - gocritic
+    - gocyclo
+    - govet
+    - ineffassign
+    - misspell
+    - nakedret
+    - prealloc
+    - revive
+    - staticcheck
+    - unconvert
+    - unused
+  settings:
+    gosec:
+      excludes:
+        - G402
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - builtin$
+      - examples$
+      - third_party$
+      - vendor$
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - builtin$
+      - examples$
+      - third_party$
+      - vendor$
